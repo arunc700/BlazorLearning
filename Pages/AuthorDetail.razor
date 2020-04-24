@@ -1,0 +1,30 @@
+﻿@page "/author/Details/{authorId:int}"
+@page "/author/Details"
+
+
+@using BlazorAppDemo.Data
+@inject IAuthor authorService;
+
+<h3>Author Detail</h3>
+<br />
+<p>@AuthorId</p>
+
+<p>
+    Author id :  @author.ID;<br />
+    Author Name :  @author.Name;<br />
+    Author DateOfBirth :  @author.DateOfBirth;<br />
+</p>
+@code {
+
+    [Parameter]
+    public int AuthorId { get; set; }
+
+    public Author author { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // author = new AuthorData();
+        author = authorService.GetAuthorByIdAsync(AuthorId);
+
+    }
+}

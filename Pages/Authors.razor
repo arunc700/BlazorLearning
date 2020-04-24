@@ -1,0 +1,93 @@
+﻿@page "/authors"
+@using BlazorAppDemo.Data
+@inject IAuthor authorServices;
+@inject NavigationManager NavigatorManager
+@inject IJSRuntime JSRunTime
+<h3>Authors</h3>
+<hr />
+
+<a href="/author/Details/12">Arun Singh</a>
+
+<button class="btn btn-primary" @onclick="ClickMe">Arun</button>
+<br />
+<br />
+<div id="messageBoc" class="col-12 alert-info"></div>
+<div class="col-12">
+
+    <EditForm Model="@author" OnValidSubmit="@SaveAuthor">
+        @*<DataAnnotationsValidator></DataAnnotationsValidator>*@
+        @*<ValidationSummary></ValidationSummary>*@
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">First Name</label>
+            <InputText class="form-control col-3" @bind-Value="author.Name" placeholder="Name"></InputText>
+            <ValidationMessage For="@(()=>author.Name)"></ValidationMessage>
+        </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">Email</label>
+            <InputText class="form-control col-3" @bind-Value="author.Email" placeholder="Email"></InputText>
+            <ValidationMessage For="@(()=>author.Email)"></ValidationMessage>
+        </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">Salary</label>
+            <InputNumber class="form-control col-3" @bind-Value="author.Salary" placeholder="Salary"></InputNumber>
+            <ValidationMessage For="@(()=>author.Salary)"></ValidationMessage>
+        </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">Date of Birth</label>
+            <InputDate class="form-control col-3" @bind-Value="author.DateOfBirth" placeholder="Date of Birth"></InputDate>
+            <ValidationMessage For="@(()=>author.DateOfBirth)"></ValidationMessage>
+        </div>
+        <div class="col-12 row">
+            <input type="submit" value="Submit" />
+        </div>
+    </EditForm>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name </th>
+            <th>Salary </th>
+            <th>DOB</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in authorList)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.Name</td>
+                <td>@item.Salary</td>
+                <td>@item.DateOfBirth.ToShortDateString()</td>
+                <td><NavLink href=@string.Format("/author/Details/{0}",@item.ID)>View</NavLink></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    List<Author> authorList = new List<Author>();
+    public Author author { get; set; }
+
+    protected override void OnInitialized()
+    {
+        author = new Author();
+        // author = new AuthorData();
+        authorList = authorServices.GetAuthorAsync();
+    }
+
+    private async Task SaveAuthor()
+    {
+        authorServices.SaveAuthor(author);
+        await JSRunTime.InvokeVoidAsync("saveMessage", author.Name, author.Email);
+        author = new Author();
+    }
+
+    void ClickMe()
+    {
+        NavigatorManager.NavigateTo("/author/Details/12");
+    }
+}
