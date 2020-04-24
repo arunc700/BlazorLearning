@@ -1,4 +1,6 @@
 ﻿@page "/authors"
+
+
 @using BlazorAppDemo.Data
 @inject IAuthor authorServices;
 @inject NavigationManager NavigatorManager
@@ -6,12 +8,12 @@
 <h3>Authors</h3>
 <hr />
 
-<a href="/author/Details/12">Arun Singh</a>
+<a href="/author/Details/2">Arun Singh</a>
 
 <button class="btn btn-primary" @onclick="ClickMe">Arun</button>
 <br />
 <br />
-<div id="messageBoc" class="col-12 alert-info"></div>
+<div id="messageBox" class="col-12 alert alert-info"></div>
 <div class="col-12">
 
     <EditForm Model="@author" OnValidSubmit="@SaveAuthor">
@@ -19,7 +21,7 @@
         @*<ValidationSummary></ValidationSummary>*@
         <div class="col-12 row">
             <label class="col-2 font-weight-bold">First Name</label>
-            <InputText class="form-control col-3" @bind-Value="author.Name" placeholder="Name"></InputText>
+            <input @ref="nameText" class="form-control col-3" @bind="author.Name" placeholder="Name" />
             <ValidationMessage For="@(()=>author.Name)"></ValidationMessage>
         </div>
         <div class="col-12 row">
@@ -27,6 +29,19 @@
             <InputText class="form-control col-3" @bind-Value="author.Email" placeholder="Email"></InputText>
             <ValidationMessage For="@(()=>author.Email)"></ValidationMessage>
         </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">City</label>
+            <InputSelect @bind-Value="author.City" class="form-control col-3">
+                @if (@cities != null)
+                {
+                @foreach (var city in cities)
+                { 
+                    <option value="@city">@city</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
         <div class="col-12 row">
             <label class="col-2 font-weight-bold">Salary</label>
             <InputNumber class="form-control col-3" @bind-Value="author.Salary" placeholder="Salary"></InputNumber>
@@ -48,6 +63,7 @@
             <th>Id</th>
             <th>Name </th>
             <th>Salary </th>
+            <th>City </th>
             <th>DOB</th>
             <th>Action</th>
         </tr>
@@ -55,13 +71,14 @@
     <tbody>
         @foreach (var item in authorList)
         {
-            <tr>
-                <td>@item.ID</td>
-                <td>@item.Name</td>
-                <td>@item.Salary</td>
-                <td>@item.DateOfBirth.ToShortDateString()</td>
-                <td><NavLink href=@string.Format("/author/Details/{0}",@item.ID)>View</NavLink></td>
-            </tr>
+        <tr>
+            <td>@item.ID</td>
+            <td>@item.Name</td>
+            <td>@item.Salary</td>
+            <td>@item.City</td>
+            <td>@item.DateOfBirth.ToShortDateString()</td>
+            <td><NavLink href=@string.Format("/author/Details/{0}",@item.ID)>View</NavLink></td>
+        </tr>
         }
     </tbody>
 </table>
@@ -71,6 +88,18 @@
 @code {
     List<Author> authorList = new List<Author>();
     public Author author { get; set; }
+    public string[] cities { get; set; }
+
+    ElementReference nameText;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && cities == null)
+        {
+            cities = await JSRunTime.InvokeAsync<string[]>("GetCity");
+            StateHasChanged();
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -83,6 +112,9 @@
     {
         authorServices.SaveAuthor(author);
         await JSRunTime.InvokeVoidAsync("saveMessage", author.Name, author.Email);
+        await JSRunTime.InvokeVoidAsync("SetFocusOnName", nameText);
+
+
         author = new Author();
     }
 
