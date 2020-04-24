@@ -10,3 +10,5 @@ This repository will cover from day one
 	2) Javascript method call
 	3) dropdown bind
 	4) Routing with query string
+  3) dropdown bind
+  
