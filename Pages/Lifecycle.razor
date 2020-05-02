@@ -1,0 +1,101 @@
+﻿@page  "/lifecycle";
+@inject IJSRuntime JSRunTime
+
+<h3>Lifecycle</h3>
+<ul>
+    <li>@onInitialized</li>
+    <li>@onInitializedAsync</li>
+    <li>@onParametersSet</li>
+    <li>@onParametersSetAsync</li>
+    <li>@onAfterRender</li>
+    <li>@onAfterRenderAsync</li>
+    <li>ShouldRender</li>
+    <li>IDisposable => Dispose</li>
+
+
+</ul>
+
+<br />
+<MessageBoxUI IsVisible="@IsVisible" Results="@Results">
+    @*<span>Lifecycle Testing : </span>@FullRecord*@
+</MessageBoxUI>
+
+<h3>Dropdown binding to test OnAfterRender</h3>
+<div class="col-12 row">
+    <label class="col-2 font-weight-bold">City</label>
+
+
+
+</div>
+
+
+
+@code {
+
+    //Message show properties
+    public bool IsVisible { get; set; }
+    public string FullRecord { get; set; }
+    public bool Results { get; set; }
+
+    [Parameter] public string CurrentCity { get; set; }
+    public string[] cities { get; set; }
+
+    [Parameter] public string onInitialized { get; set; }
+    [Parameter] public string onInitializedAsync { get; set; }
+    [Parameter] public string onParametersSet { get; set; }
+    [Parameter] public string onParametersSetAsync { get; set; }
+    [Parameter] public string onAfterRender { get; set; }
+    [Parameter] public string onAfterRenderAsync { get; set; }
+
+    protected override void OnInitialized()
+    {
+        onInitialized = "OnInitialized Called";
+        CurrentCity = "Arun";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => onInitializedAsync = "OnInitializedAsync Called");
+    }
+
+    protected override void OnParametersSet()
+    {
+        Results = false;
+        IsVisible = true;
+        FullRecord = "OnParametersSet Called";
+        onParametersSet = "OnParametersSet Called";
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Run(() => onParametersSetAsync = "OnParametersSetAsync Called");
+    }
+
+
+    //protected override void OnAfterRender(bool firstRender)
+    //{
+    //    onAfterRender = "OnAfterRender Called, First Render :  " + firstRender;
+    //    //if (firstRender)
+    //    //{
+
+    //    //    //StateHasChanged();
+    //    //}
+    //}
+
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+
+    //    onAfterRenderAsync = "OnAfterRenderAsync Called, First Render :  " + firstRender;
+    //    if (firstRender)
+    //    {
+    //        cities = await JSRunTime.InvokeAsync<string[]>
+    //           ("GetCity");
+    //        StateHasChanged();
+    //    }
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
+
+
+
+}
