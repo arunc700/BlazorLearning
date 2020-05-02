@@ -1,0 +1,24 @@
+﻿@page "/Help"
+
+<h1>Blazor Help</h1>
+
+
+
+
+<div class="panel-body">
+
+    <p>
+        Remove <b>services.AddServerSideBlazor();</b> from <b>Startup.cs</b> and write below code
+    </p>
+<pre style="background-color:antiquewhite">
+            services.AddServerSideBlazor()
+                .AddCircuitOptions(options => { options.DetailedErrors = true; });
+</pre>
+</div>
+
+
+
+
+@code {
+
+}

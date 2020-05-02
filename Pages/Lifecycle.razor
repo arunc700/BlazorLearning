@@ -1,5 +1,6 @@
 ﻿@page  "/lifecycle";
-@inject IJSRuntime JSRunTime
+@implements IDisposable
+@inject IJSRuntime JSRunTime;
 
 <h3>Lifecycle</h3>
 <ul>
@@ -22,9 +23,22 @@
 
 <h3>Dropdown binding to test OnAfterRender</h3>
 <div class="col-12 row">
-    <label class="col-2 font-weight-bold">City</label>
+    
+    @*<City></City>*@
 
 
+    <div class="col-12 row">
+        <label class="col-2 font-weight-bold">City</label>
+        <select @bind="CurrentCity" class="form-control col-3">
+            @if (@cities != null)
+            {
+                @foreach (var city in cities)
+                {
+                    <option value="@city">@city</option>
+                }
+            }
+        </select>
+    </div>
 
 </div>
 
@@ -72,30 +86,43 @@
     }
 
 
-    //protected override void OnAfterRender(bool firstRender)
-    //{
-    //    onAfterRender = "OnAfterRender Called, First Render :  " + firstRender;
-    //    //if (firstRender)
-    //    //{
+    protected override void OnAfterRender(bool firstRender)
+    {
+        onAfterRender = "OnAfterRender Called, First Render :  " + firstRender;
+        //if (firstRender)
+        //{
 
-    //    //    //StateHasChanged();
-    //    //}
-    //}
+        //    //StateHasChanged();
+        //}
 
-
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-
-    //    onAfterRenderAsync = "OnAfterRenderAsync Called, First Render :  " + firstRender;
-    //    if (firstRender)
-    //    {
-    //        cities = await JSRunTime.InvokeAsync<string[]>
-    //           ("GetCity");
-    //        StateHasChanged();
-    //    }
-    //    await base.OnAfterRenderAsync(firstRender);
-    //}
+    }
 
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        onAfterRenderAsync = "OnAfterRenderAsync Called, First Render :  " + firstRender;
+         if (firstRender && cities == null)
+        {
+            CurrentCity = "Delhi";
+            cities = await JSRunTime.InvokeAsync<string[]>
+                ("GetCity");
+            //StateHasChanged();
+        }
+
+    }
+
+
+    protected override bool ShouldRender()
+    {
+        var renderUI = true;
+
+        return renderUI;
+    }
+
+    public void Dispose()
+    {
+
+    }
 
 }
