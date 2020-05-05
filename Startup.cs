@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazorAppDemo.Data;
+using LearningWebApi.DBContext;
+using BlazorAppDemo.Services;
 
 namespace BlazorAppDemo
 {
@@ -27,12 +29,19 @@ namespace BlazorAppDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-           // services.AddServerSideBlazor();
+
+
+            // services.AddServerSideBlazor();
             services.AddServerSideBlazor()
                 .AddCircuitOptions(options => { options.DetailedErrors = true; });
 
             services.AddSingleton<WeatherForecastService>();
             services.AddTransient<IAuthor, AuthorData>();
+            services.AddHttpClient<IEmployeeService, EmployeeService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44334/");
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
